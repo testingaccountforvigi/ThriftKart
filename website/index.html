@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ThriftKart — a campus-first second-hand textbook marketplace." />
+  <title>ThriftKart — textbooks, already on campus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="progress"><i></i></div>
+
+  <header class="nav-wrap" id="top">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="#top"><span class="logo"><b></b><b></b><b></b></span>thriftkart</a>
+      <div class="nav-links">
+        <a href="#marketplace">Marketplace</a><a href="#how">How it works</a><a href="#sell">Sell a book</a>
+      </div>
+      <button class="btn dark nav-cta" data-scroll="#marketplace">Browse books</button>
+      <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
+    </nav>
+    <div class="mobile-nav" aria-hidden="true">
+      <a href="#marketplace">Marketplace</a><a href="#how">How it works</a><a href="#sell">Sell a book</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell" id="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><i></i>Campus-only textbook exchange</p>
+        <h1 data-split>Buy the book. <span class="chip-word">Skip the full price.</span></h1>
+        <p class="lead">Find a used textbook, message the seller, and hand it over on campus. No couriers, no strangers.
+        </p>
+        <div class="hero-actions">
+          <button class="btn dark" data-scroll="#marketplace">Explore books</button>
+          <button class="btn soft" data-scroll="#sell">I have a book to sell</button>
+        </div>
+      </div>
+
+      <div class="hero-art" aria-hidden="true">
+        <div class="blob"></div>
+        <div class="pile" data-speed="-.06">
+          <div class="bk k1"><span>Engineering<br>Statistics</span><small>Ross</small></div>
+          <div class="bk k2"><span>Operating System Concepts</span><small>Silberschatz</small></div>
+          <div class="bk k3"><span>Let Us C</span><small>Kanetkar</small></div>
+          <div class="bk k4"><span>Discrete Maths</span><small>Rosen</small></div>
+        </div>
+        <svg class="sticker" data-speed=".05" viewBox="0 0 120 120">
+          <defs>
+            <path id="circ" d="M60 60m-44 0a44 44 0 1 1 88 0a44 44 0 1 1-88 0" />
+          </defs>
+          <circle cx="60" cy="60" r="58" fill="#d4f25a" /><text font-family="Fredoka" font-weight="600" font-size="13"
+            fill="#141b34" letter-spacing="2">
+            <textPath href="#circ">second-hand · first-class · second-hand · first-class ·</textPath>
+          </text><text x="60" y="68" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="22"
+            fill="#141b34">₹420</text>
+        </svg>
+        <div class="float f1" data-speed=".09"><i></i>12 new listings</div>
+        <div class="float f2" data-speed="-.04">Checked before it goes live</div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div><span>Statistics</span><span>DBMS</span><span>Operating Systems</span><span>Networks</span><span>Discrete
+          Maths</span><span>Software Engineering</span><span>Statistics</span><span>DBMS</span><span>Operating
+          Systems</span><span>Networks</span><span>Discrete Maths</span><span>Software Engineering</span></div>
+    </div>
+
+    <section class="stats shell">
+      <div><strong data-count="500">0</strong><span>listings targeted this semester</span></div>
+      <div><strong data-count="150">0</strong><span>sales targeted this semester</span></div>
+      <div><strong data-count="1">0</strong><span>handover model: on campus</span></div>
+      <div><strong data-count="0">0</strong><span>deliveries to wait for</span></div>
+    </section>
+
+    <section class="section shell" id="marketplace">
+      <div class="head">
+        <h2>Good books, <br>better prices.</h2>
+        <p>Every listing is checked by a moderator before it appears here.</p>
+      </div>
+      <div class="tools">
+        <label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.6" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg><input id="searchInput" type="search" placeholder="Search title, author or course" /></label>
+        <select id="conditionFilter" aria-label="Condition">
+          <option value="all">Any condition</option>
+          <option value="5">Excellent</option>
+          <option value="4">Very good</option>
+          <option value="3">Good</option>
+          <option value="2">Fair</option>
+          <option value="1">Poor</option>
+        </select>
+        <select id="sortSelect" aria-label="Sort">
+          <option value="featured">Featured</option>
+          <option value="price-low">Lowest price</option>
+          <option value="price-high">Highest price</option>
+        </select>
+      </div>
+      <div class="view-toggle" role="group" aria-label="View"><button class="on" data-view="shelf">Shelf</button><button
+          data-view="grid">Grid</button></div>
+      <div class="shelf" id="bookGrid"></div>
+      <div class="empty" id="emptyState" hidden>No books match that search. Try a broader title or clear the filters.
+      </div>
+    </section>
+
+    <section class="how" id="how">
+      <div class="shell how-grid">
+        <div class="how-head">
+          <h2>Four steps, <br>one campus.</h2>
+          <p>A short, predictable path from your shelf to someone else's backpack.</p>
+        </div>
+        <div class="stack">
+          <article class="step s1"><span class="num">1</span>
+            <h3>List</h3>
+            <p>Add the title, condition, price and a handover spot on campus.</p>
+          </article>
+          <article class="step s2"><span class="num">2</span>
+            <h3>Moderate</h3>
+            <p>A moderator checks every new listing before anyone else can see it.</p>
+          </article>
+          <article class="step s3"><span class="num">3</span>
+            <h3>Match</h3>
+            <p>A buyer finds your book, checks the details and sends a request.</p>
+          </article>
+          <article class="step s4"><span class="num">4</span>
+            <h3>Meet</h3>
+            <p>Confirm payment, meet at the handover spot, mark the sale complete.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell sell" id="sell">
+      <div class="sell-copy">
+        <h2>Your shelf has <br>unfinished business.</h2>
+        <p>Fill in the form and watch your listing take shape. Once a moderator approves it, buyers can find it.</p>
+        <div class="preview-wrap">
+          <p class="pv-label">Live preview</p>
+          <div id="preview"></div>
+        </div>
+      </div>
+      <form class="sell-card" id="sellForm">
+        <div class="form-top">
+          <h3>Create a listing</h3><span class="pill-ok">Moderated</span>
+        </div>
+        <label>Book title<input name="title" required placeholder="e.g. Database System Concepts" /></label>
+        <div class="two"><label>Author<input name="author" placeholder="e.g. Silberschatz" /></label><label>Course<input
+              name="course" placeholder="e.g. DBMS" /></label></div>
+        <div class="two"><label>Price (₹)<input name="price" type="number" min="1" max="20000" required
+              placeholder="1200" /></label>
+          <label>Condition<select name="condition" required>
+              <option value="5">5 · Excellent</option>
+              <option value="4">4 · Very good</option>
+              <option value="3">3 · Good</option>
+              <option value="2">2 · Fair</option>
+              <option value="1">1 · Poor</option>
+            </select></label>
+        </div>
+        <label>Handover point<input name="location" required placeholder="Main library entrance" /></label>
+        <label>Note for buyers<textarea name="description" rows="3"
+            placeholder="Highlights, markings, edition…"></textarea></label>
+        <button class="btn dark full" type="submit">Send for moderation</button>
+      </form>
+    </section>
+
+    <footer class="footer">
+      <div class="shell foot-top">
+        <p>Second-hand textbooks, already on campus.</p>
+        <a class="btn soft" href="#">Back to top ↑</a>
+      </div>
+      <div class="wordmark" aria-hidden="true">thriftkart</div>
+    </footer>
+  </main>
+
+  <div class="modal" id="bookModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" aria-label="Close">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status"><span class="ti">✓</span><span id="toastText">Done</span></div>
+  <script src="script.js"></script>
+</body>
+
+</html>

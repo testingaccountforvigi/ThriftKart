@@ -1,0 +1,195 @@
+@startuml UseCase_ThriftKart
+left to right direction
+skinparam style strictuml
+skinparam backgroundColor #FFFDFC
+skinparam actorStyle awesome
+actor "Student Buyer" as Buyer
+actor "Student Seller" as Seller
+actor "Admin Moderator" as Admin
+rectangle ThriftKart {
+  usecase "Register / Login" as UC1
+  usecase "Find a Book" as UC2
+  usecase "View Listing" as UC3
+  usecase "Start Chat" as UC4
+  usecase "Request Purchase" as UC5
+  usecase "Complete Sale" as UC6
+  usecase "Create Listing" as UC7
+  usecase "Submit for Moderation" as UC8
+  usecase "Review Listing" as UC9
+  usecase "Approve / Reject" as UC10
+  usecase "Record Payment Status" as UC11
+  usecase "Record Handover" as UC13
+  usecase "Report Listing / User" as UC12
+}
+Buyer --> UC1
+Buyer --> UC2
+Buyer --> UC3
+Buyer --> UC4
+Buyer --> UC5
+Buyer --> UC6
+Buyer --> UC12
+Seller --> UC1
+Seller --> UC7
+Seller --> UC8
+Seller --> UC4
+Seller --> UC6
+Admin --> UC9
+Admin --> UC10
+UC7 .> UC8 : <<include>>
+UC9 .> UC10 : <<include>>
+UC5 .> UC11 : <<include>>
+UC6 .> UC11 : <<include>>
+UC6 .> UC13 : <<include>>
+@enduml
+
+@startuml Class_ThriftKart
+hide circle
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FFFDFC
+class User {
+  +user_id
+  +university_email
+  +full_name
+  +year_of_study
+  +role
+  +status
+  +register()
+  +authenticate()
+  +updateProfile()
+}
+class Category { +category_id +name +slug }
+class Listing {
+  +listing_id
+  +title
+  +author
+  +price
+  +condition_rating
+  +status
+  +validate()
+  +submitForModeration()
+  +reserve()
+  +markSold()
+}
+class ListingImage { +image_id +image_url +sort_order }
+class Conversation { +conversation_id +status +start() +close() }
+class Message { +message_id +body +sent_at +read_at +send() +markRead() }
+class Transaction {
+  +transaction_id
+  +agreed_price
+  +payment_method
+  +payment_status
+  +handover_location
+  +status
+  +request()
+  +confirmPayment()
+  +scheduleHandover()
+  +complete()
+}
+class PaymentRecord { +payment_id +amount +method +status +provider_reference +record() +confirm() }
+class ModerationReview { +review_id +decision +reason +reviewed_at +approve() +reject() }
+class Report { +report_id +reason +status +created_at +resolved_at +open() +resolve() }
+User "1" -- "0..*" Listing : sells
+Category "1" -- "0..*" Listing
+Listing "1" -- "0..*" ListingImage
+Listing "1" -- "0..*" Conversation
+User "1" -- "0..*" Conversation : buyer
+User "1" -- "0..*" Conversation : seller
+Conversation "1" -- "0..*" Message
+User "1" -- "0..*" Message : sends
+Listing "1" -- "0..1" Transaction
+User "1" -- "0..*" Transaction : buyer
+User "1" -- "0..*" Transaction : seller
+Transaction "1" -- "0..1" PaymentRecord
+Listing "1" -- "0..*" ModerationReview
+User "1" -- "0..*" ModerationReview : moderator
+User "1" -- "0..*" Report : reporter
+Listing "0..1" -- "0..*" Report
+User "0..1" -- "0..*" Report : reported user
+@enduml
+
+@startuml Sequence_ThriftKart
+skinparam backgroundColor #FFFDFC
+autonomous "Seller" as Seller
+participant "Web UI" as UI
+participant "API" as API
+database "Database" as DB
+participant "Admin" as Admin
+participant "Buyer" as Buyer
+participant "Chat / Transaction" as TX
+Seller -> UI : Enter textbook details
+UI -> API : POST /listings
+API -> API : Validate required fields
+API -> DB : Save Draft
+Seller -> UI : Submit for moderation
+UI -> API : PUT status=Pending Moderation
+API -> DB : Update listing state
+Admin -> API : Open moderation queue
+Admin -> API : Approve listing
+API -> DB : Save review + set Published
+Buyer -> UI : Search / open listing
+UI -> API : GET listing
+Buyer -> UI : Request purchase
+UI -> API : POST purchase request
+API -> DB : Check available + create Transaction
+API -> DB : Set Listing = Reserved
+Buyer -> TX : Message / coordinate handover
+TX -> DB : Record payment status + handover
+Buyer -> TX : Confirm handover
+Seller -> TX : Confirm handover
+TX -> DB : Transaction = Completed; Listing = Sold
+@enduml
+
+@startuml Activity_ThriftKart
+skinparam backgroundColor #FFFDFC
+start
+:Open ThriftKart;
+if (Buyer or Seller?) then (Seller)
+  :Create listing;
+  :Validate fields, price, condition;
+  if (Valid?) then (Yes)
+    :Submit for moderation;
+    :Admin reviews;
+    if (Approved?) then (Yes)
+      :Publish listing;
+    else (No)
+      :Reject with reason;
+      :Seller edits and resubmits;
+      stop
+    endif
+  else (No)
+    :Show validation errors;
+    stop
+  endif
+else (Buyer)
+  :Search and filter books;
+  :Open listing;
+  :Request purchase;
+  :Check availability;
+  if (Available?) then (Yes)
+    :Create reservation / transaction;
+    :Chat and coordinate;
+    :Record payment status;
+    :Record campus handover;
+    :Complete transaction;
+    :Mark listing Sold;
+  else (No)
+    :Show unavailable state;
+  endif
+endif
+stop
+@enduml
+
+@startuml State_ThriftKart_Listing
+skinparam backgroundColor #FFFDFC
+[*] --> Draft
+Draft --> "Pending Moderation" : submit
+"Pending Moderation" --> Published : approve
+"Pending Moderation" --> Rejected : reject
+Rejected --> Draft : edit / resubmit
+Published --> Reserved : purchase request
+Published --> Archived : archive
+Reserved --> Published : release / cancel
+Reserved --> Sold : handover complete
+Sold --> Archived : archive
+Archived --> [*]
+@enduml
